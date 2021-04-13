@@ -1,4 +1,4 @@
-package ru.geekbrains.cityheraldry.event_bus;
+package com.example.myfragment.event_bus;
 
 import com.squareup.otto.Bus;
 
