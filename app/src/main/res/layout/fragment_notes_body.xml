@@ -10,13 +10,33 @@
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:textStyle="bold"
         android:textSize="30sp"
-        android:text="TextView" />
+        android:textColor="@color/blue"
+        tools:text="Text"
+        tools:ignore="TextViewEdits" />
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/body"
+    <TextView
+        android:id="@+id/textBody"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/msc" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:textSize="20sp"
+        tools:text="Text"
+        tools:ignore="TextViewEdits" />
+
+    <TextView
+        android:id="@+id/textDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/red"
+        tools:text="Text"
+        tools:ignore="TextViewEdits" />
+
+
 
 </LinearLayout>
