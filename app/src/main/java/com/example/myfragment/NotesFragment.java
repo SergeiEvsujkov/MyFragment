@@ -1,9 +1,14 @@
 package com.example.myfragment;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -12,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -30,7 +36,11 @@ public class NotesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_notes, container, false);
+
+
+        View view = inflater.inflate(R.layout.fragment_notes, container, false);
+        setHasOptionsMenu(true);
+        return view;
     }
 
     @Override
@@ -66,6 +76,7 @@ public class NotesFragment extends Fragment {
             layoutView.addView(tv);
             tv.setTextColor(getResources().getColor(R.color.blue));
             final int fi = i;
+            registerForContextMenu(tv);
             tv.setOnClickListener(v -> {
                 currentNote = new Note(fi, getResources().getStringArray(R.array.notes)[fi], getResources().getStringArray(R.array.notesBody)[fi], getResources().getStringArray(R.array.notesDate)[fi]);
                 showBody(currentNote);
@@ -131,5 +142,29 @@ public class NotesFragment extends Fragment {
     public void onButtonClickedEvent(ButtonClickedEvent event) {
         Toast.makeText(requireContext(), String.valueOf(event.count),
                 Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, @Nullable ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        requireActivity().getMenuInflater().inflate(R.menu.popup, menu);
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.item1_popup:
+                Toast.makeText(getContext(), "Send", Toast.LENGTH_SHORT)
+                        .show();
+                return true;
+            case R.id.item2_popup:
+                Toast.makeText(getContext(), "Add photo", Toast.LENGTH_SHORT)
+                        .show();
+                return true;
+        }
+        return super.onContextItemSelected(item);
     }
 }
