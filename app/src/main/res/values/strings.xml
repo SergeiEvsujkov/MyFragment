@@ -8,4 +8,7 @@
     <string name="main">Main</string>
     <string name="send">Send</string>
     <string name="add_photo">Add photo</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="myfragment">MyFragment</string>
 </resources>
