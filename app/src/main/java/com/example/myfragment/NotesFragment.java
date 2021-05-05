@@ -30,6 +30,8 @@ import com.squareup.otto.Subscribe;
 import com.example.myfragment.event_bus.EventBus;
 import com.example.myfragment.event_bus.events.ButtonClickedEvent;
 
+import java.util.Objects;
+
 public class NotesFragment extends Fragment {
 
     public static final String CURRENT_NOTE = "CurrentNote";
@@ -52,7 +54,7 @@ public class NotesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //initList(view);
+
     }
 
     @Override
@@ -79,6 +81,20 @@ public class NotesFragment extends Fragment {
         // Установим адаптер
         NotesAdapter adapter = new NotesAdapter(data);
         recyclerView.setAdapter(adapter);
+
+
+        // Установим слушателя
+        adapter.SetOnItemClickListener(new NotesAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int fi) {
+                registerForContextMenu(view);
+                currentNote = new Note(fi, getResources().getStringArray(R.array.notes)[fi], getResources().getStringArray(R.array.notesBody)[fi], getResources().getStringArray(R.array.notesDate)[fi]);
+                showBody(currentNote);
+
+
+            }
+        });
+
     }
 
 
@@ -97,10 +113,7 @@ public class NotesFragment extends Fragment {
             tv.setTextColor(getResources().getColor(R.color.blue));
             final int fi = i;
             registerForContextMenu(tv);
-            tv.setOnClickListener(v -> {
-                currentNote = new Note(fi, getResources().getStringArray(R.array.notes)[fi], getResources().getStringArray(R.array.notesBody)[fi], getResources().getStringArray(R.array.notesDate)[fi]);
-                showBody(currentNote);
-            });
+
         }
     }
 
@@ -165,9 +178,10 @@ public class NotesFragment extends Fragment {
     }
 
     @Override
-    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, @Nullable ContextMenu.ContextMenuInfo menuInfo) {
+    public  void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, @Nullable ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         requireActivity().getMenuInflater().inflate(R.menu.popup, menu);
+
     }
 
     @SuppressLint("NonConstantResourceId")
