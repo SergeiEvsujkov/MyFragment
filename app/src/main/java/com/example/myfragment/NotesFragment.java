@@ -21,7 +21,10 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myfragment.ui.NotesAdapter;
 import com.squareup.otto.Subscribe;
 
 import com.example.myfragment.event_bus.EventBus;
@@ -39,6 +42,9 @@ public class NotesFragment extends Fragment {
 
 
         View view = inflater.inflate(R.layout.fragment_notes, container, false);
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_view_lines);
+        String[] data = getResources().getStringArray(R.array.notes);
+        initRecyclerView(recyclerView, data);
         setHasOptionsMenu(true);
         return view;
     }
@@ -46,7 +52,7 @@ public class NotesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initList(view);
+        //initList(view);
     }
 
     @Override
@@ -59,6 +65,20 @@ public class NotesFragment extends Fragment {
     public void onStop() {
         EventBus.getBus().unregister(this);
         super.onStop();
+    }
+
+    private void initRecyclerView(RecyclerView recyclerView, String[] data){
+
+        // Эта установка служит для повышения производительности системы
+        recyclerView.setHasFixedSize(true);
+
+        // Будем работать со встроенным менеджером
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(layoutManager);
+
+        // Установим адаптер
+        NotesAdapter adapter = new NotesAdapter(data);
+        recyclerView.setAdapter(adapter);
     }
 
 
