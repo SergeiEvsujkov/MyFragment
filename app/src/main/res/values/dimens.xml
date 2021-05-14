@@ -3,4 +3,6 @@
     <dimen name="nav_header_height">200dp</dimen>
     <dimen name="nav_header_dimen">42sp</dimen>
     <dimen name="sizeItemList">30sp</dimen>
+    <dimen name="textNotes">42sp</dimen>
+    <dimen name="heightImage">100dp</dimen>
 </resources>

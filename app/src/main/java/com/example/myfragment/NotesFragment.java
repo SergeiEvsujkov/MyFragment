@@ -21,6 +21,7 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,6 +30,8 @@ import com.squareup.otto.Subscribe;
 
 import com.example.myfragment.event_bus.EventBus;
 import com.example.myfragment.event_bus.events.ButtonClickedEvent;
+import com.example.myfragment.data.CardsSource;
+import com.example.myfragment.data.CardsSourceImpl;
 
 import java.util.Objects;
 
@@ -45,7 +48,9 @@ public class NotesFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_notes, container, false);
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view_lines);
-        String[] data = getResources().getStringArray(R.array.notes);
+
+        // Получим источник данных для списка
+        CardsSource data = new CardsSourceImpl(getResources()).init();
         initRecyclerView(recyclerView, data);
         setHasOptionsMenu(true);
         return view;
@@ -69,7 +74,8 @@ public class NotesFragment extends Fragment {
         super.onStop();
     }
 
-    private void initRecyclerView(RecyclerView recyclerView, String[] data){
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private void initRecyclerView(RecyclerView recyclerView, CardsSource data){
 
         // Эта установка служит для повышения производительности системы
         recyclerView.setHasFixedSize(true);
@@ -82,13 +88,19 @@ public class NotesFragment extends Fragment {
         NotesAdapter adapter = new NotesAdapter(data);
         recyclerView.setAdapter(adapter);
 
+        // Добавим разделитель карточек
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(),  LinearLayoutManager.VERTICAL);
+        itemDecoration.setDrawable(getResources().getDrawable(R.drawable.separator, null));
+        recyclerView.addItemDecoration(itemDecoration);
+
+
 
         // Установим слушателя
         adapter.SetOnItemClickListener(new NotesAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int fi) {
                 registerForContextMenu(view);
-                currentNote = new Note(fi, getResources().getStringArray(R.array.notes)[fi], getResources().getStringArray(R.array.notesBody)[fi], getResources().getStringArray(R.array.notesDate)[fi]);
+                currentNote = new Note(fi, getResources().getStringArray(R.array.notes1)[fi], getResources().getStringArray(R.array.notesBody)[fi], getResources().getStringArray(R.array.notesDate)[fi]);
                 showBody(currentNote);
 
 
@@ -97,25 +109,6 @@ public class NotesFragment extends Fragment {
 
     }
 
-
-    private void initList(View view) {
-        LinearLayout layoutView = (LinearLayout) view;
-        String[] notes = getResources().getStringArray(R.array.notes);
-
-
-        for (int i = 0; i < notes.length; i++) {
-            String note = notes[i];
-            TextView tv = new TextView(getContext());
-
-            tv.setText(note);
-            tv.setTextSize(30);
-            layoutView.addView(tv);
-            tv.setTextColor(getResources().getColor(R.color.blue));
-            final int fi = i;
-            registerForContextMenu(tv);
-
-        }
-    }
 
 
     @Override
@@ -137,7 +130,7 @@ public class NotesFragment extends Fragment {
         if (savedInstanceState != null) {
             currentNote = savedInstanceState.getParcelable(CURRENT_NOTE);
         } else {
-            currentNote = new Note(0, getResources().getStringArray(R.array.notes)[0], getResources().getStringArray(R.array.notesBody)[0], getResources().getStringArray(R.array.notesDate)[0]);
+            currentNote = new Note(0, getResources().getStringArray(R.array.notes1)[0], getResources().getStringArray(R.array.notesBody)[0], getResources().getStringArray(R.array.notesDate)[0]);
         }
 
 
@@ -146,7 +139,7 @@ public class NotesFragment extends Fragment {
         }
     }
 
-    private void showBody(Note currentCity) {
+    private void showBody(Note currentNote) {
         if (isLandscape) {
             showLandBody(currentNote);
         } else {
@@ -155,7 +148,7 @@ public class NotesFragment extends Fragment {
     }
 
 
-    private void showLandBody(Note currentCity) {
+    private void showLandBody(Note currentNote) {
         NotesBodyFragment detail = NotesBodyFragment.newInstance(currentNote);
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

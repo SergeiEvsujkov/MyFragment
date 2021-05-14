@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="notes">
+    <string-array name="notes1">
         <item>Земля</item>
         <item>Меркурий</item>
         <item>Марс</item>
@@ -24,4 +24,11 @@
         <item>07.11.2020</item>
     </string-array>
 
+    <array name="pictures">
+        <item>@drawable/earth</item>
+        <item>@drawable/merc</item>
+        <item>@drawable/mars</item>
+        <item>@drawable/jup</item>
+        <item>@drawable/sat</item>
+    </array>
 </resources>

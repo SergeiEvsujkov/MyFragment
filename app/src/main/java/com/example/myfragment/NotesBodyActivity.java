@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
-// Эта activity для показа герба в портретной ориентации
+
 public class NotesBodyActivity extends AppCompatActivity {
 
     @Override

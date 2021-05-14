@@ -11,6 +11,8 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.util.Log;
+import androidx.appcompat.widget.AppCompatImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,17 +21,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myfragment.NotesFragment;
 import com.example.myfragment.R;
+import com.example.myfragment.data.CardData;
+import com.example.myfragment.data.CardsSource;
 
 public class NotesAdapter
         extends RecyclerView.Adapter<NotesAdapter.ViewHolder> {
 
-    private String[] dataSource;
     private OnItemClickListener itemClickListener;
+    private final static String TAG = "NotesAdapter";
+    private final CardsSource dataSource;
 
 
     // Передаём в конструктор источник данных
     // В нашем случае это массив, но может быть и запрос к БД
-    public NotesAdapter(String[] dataSource) {
+    public NotesAdapter(CardsSource dataSource) {
         this.dataSource = dataSource;
     }
 
@@ -42,6 +47,7 @@ public class NotesAdapter
         // Через Inflater
         View v = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.item, viewGroup, false);
+        Log.d(TAG, "onCreateViewHolder");
         // Здесь можно установить всякие параметры
         return new ViewHolder(v);
     }
@@ -52,14 +58,16 @@ public class NotesAdapter
     public void onBindViewHolder(@NonNull NotesAdapter.ViewHolder viewHolder, int i) {
         // Получить элемент из источника данных (БД, интернет...)
         // Вынести на экран, используя ViewHolder
-        viewHolder.getTextView().setText(dataSource[i]);
+
+        viewHolder.setData(dataSource.getCardData(i));
+        Log.d(TAG, "onBindViewHolder");
 
     }
 
     // Вернуть размер данных, вызывается менеджером
     @Override
     public int getItemCount() {
-        return dataSource.length;
+        return dataSource.size();
     }
 
     // Этот класс хранит связь между данными и элементами View
@@ -67,15 +75,24 @@ public class NotesAdapter
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
 
 
-        private TextView textView;
+
+        private final TextView notes;
+
+        private final AppCompatImageView image;
 
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            textView = (TextView) itemView;
+
+            notes = itemView.findViewById(R.id.textView);
+
+            image = itemView.findViewById(R.id.imageView);
+
+
+
             itemView.setOnCreateContextMenuListener(this);
             // Обработчик нажатий на этом ViewHolder
-            textView.setOnClickListener(new View.OnClickListener() {
+           image.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (itemClickListener != null) {
@@ -85,8 +102,10 @@ public class NotesAdapter
             });
         }
 
-        public TextView getTextView() {
-            return textView;
+
+        public void setData(CardData cardData){
+            notes.setText(cardData.getNotes());
+            image.setImageResource(cardData.getPicture());
         }
 
 
