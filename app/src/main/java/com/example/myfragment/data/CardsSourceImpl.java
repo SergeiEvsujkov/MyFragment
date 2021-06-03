@@ -3,8 +3,12 @@ package com.example.myfragment.data;
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.icu.util.Calendar;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +27,7 @@ public class CardsSourceImpl implements CardsSource{
 
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public CardsSourceImpl init(){
         // строки заголовков из ресурсов
         String[] notes = resources.getStringArray(R.array.notes1);
@@ -30,7 +35,7 @@ public class CardsSourceImpl implements CardsSource{
         int[] pictures = getImageArray();
         // заполнение источника данных
         for (int i = 0; i < notes.length; i++) {
-            dataSource.add(new CardData(notes[i], pictures[i]));
+            dataSource.add(new CardData(notes[i], pictures[i], Calendar.getInstance().getTime()));
         }
         return this;
     }

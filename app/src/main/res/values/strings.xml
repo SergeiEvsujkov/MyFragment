@@ -15,4 +15,6 @@
     <string name="clear">Clear</string>
     <string name="update">Изменить</string>
     <string name="delete">Удалить</string>
+    <string name="name">Заголовок</string>
+    <string name="description">Описание</string>
 </resources>
