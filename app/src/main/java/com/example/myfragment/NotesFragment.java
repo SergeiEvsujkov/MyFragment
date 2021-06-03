@@ -24,6 +24,7 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -49,6 +50,7 @@ public class NotesFragment extends Fragment {
     private CardsSource data;
     private NotesAdapter adapter;
     private RecyclerView recyclerView;
+    private static final int MY_DEFAULT_DURATION = 1000;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -112,6 +114,12 @@ public class NotesFragment extends Fragment {
         DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL);
         itemDecoration.setDrawable(getResources().getDrawable(R.drawable.separator, null));
         recyclerView.addItemDecoration(itemDecoration);
+
+        // Установим анимацию. А чтобы было хорошо заметно, сделаем анимацию  долгой
+        DefaultItemAnimator animator = new DefaultItemAnimator();
+        animator.setAddDuration(MY_DEFAULT_DURATION);
+        animator.setRemoveDuration(MY_DEFAULT_DURATION);
+        recyclerView.setItemAnimator(animator);
 
 
         // Установим слушателя
@@ -209,6 +217,7 @@ public class NotesFragment extends Fragment {
 
                                 data.getCardData(position).getPicture()));
                 adapter.notifyItemChanged(position);
+                recyclerView.smoothScrollToPosition(data.size() - 1);
                 return true;
             case R.id.item2_popup:
                 data.deleteCardData(position);
