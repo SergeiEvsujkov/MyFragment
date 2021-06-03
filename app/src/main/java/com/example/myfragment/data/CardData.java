@@ -1,5 +1,8 @@
 package com.example.myfragment.data;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 public class CardData {
     private final String notes;       // заголовок
     private final int picture;        // изображение
@@ -10,6 +13,7 @@ public class CardData {
         this.picture = picture;
     }
 
+
     public String getNotes() {
         return notes;
     }
@@ -18,5 +22,6 @@ public class CardData {
     public int getPicture() {
         return picture;
     }
+
 
 }

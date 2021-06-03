@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myfragment.data.CardData;
 import com.example.myfragment.ui.NotesAdapter;
 import com.squareup.otto.Subscribe;
 
@@ -33,6 +35,7 @@ import com.example.myfragment.event_bus.events.ButtonClickedEvent;
 import com.example.myfragment.data.CardsSource;
 import com.example.myfragment.data.CardsSourceImpl;
 
+import java.util.List;
 import java.util.Objects;
 
 public class NotesFragment extends Fragment {
@@ -40,6 +43,17 @@ public class NotesFragment extends Fragment {
     public static final String CURRENT_NOTE = "CurrentNote";
     private Note currentNote;
     private boolean isLandscape;
+
+    private CardsSource data;
+    private NotesAdapter adapter;
+    private RecyclerView recyclerView;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,15 +64,20 @@ public class NotesFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view_lines);
 
         // Получим источник данных для списка
-        CardsSource data = new CardsSourceImpl(getResources()).init();
-        initRecyclerView(recyclerView, data);
+
+        //data = new CardsSourceImpl(getResources()).init();
+
+        initView(view);
         setHasOptionsMenu(true);
         return view;
     }
 
+
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
 
     }
 
@@ -75,7 +94,7 @@ public class NotesFragment extends Fragment {
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    private void initRecyclerView(RecyclerView recyclerView, CardsSource data){
+    private void initRecyclerView() {
 
         // Эта установка служит для повышения производительности системы
         recyclerView.setHasFixedSize(true);
@@ -85,14 +104,13 @@ public class NotesFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         // Установим адаптер
-        NotesAdapter adapter = new NotesAdapter(data);
+        adapter = new NotesAdapter(data);
         recyclerView.setAdapter(adapter);
 
         // Добавим разделитель карточек
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(),  LinearLayoutManager.VERTICAL);
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL);
         itemDecoration.setDrawable(getResources().getDrawable(R.drawable.separator, null));
         recyclerView.addItemDecoration(itemDecoration);
-
 
 
         // Установим слушателя
@@ -110,12 +128,12 @@ public class NotesFragment extends Fragment {
     }
 
 
-
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putParcelable(CURRENT_NOTE, currentNote);
         super.onSaveInstanceState(outState);
     }
+
 
 
     @Override
@@ -171,7 +189,7 @@ public class NotesFragment extends Fragment {
     }
 
     @Override
-    public  void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, @Nullable ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, @Nullable ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         requireActivity().getMenuInflater().inflate(R.menu.popup, menu);
 
@@ -193,5 +211,37 @@ public class NotesFragment extends Fragment {
                 return true;
         }
         return super.onContextItemSelected(item);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main, menu);
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add:
+                data.addCardData(new CardData("Заголовок " + data.size(),
+
+                        R.drawable.merc));
+                adapter.notifyItemInserted(data.size() - 1);
+                recyclerView.scrollToPosition(data.size() - 1);
+                return true;
+            case R.id.action_clear:
+                data.clearCardData();
+                adapter.notifyDataSetChanged();
+
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void initView(View view) {
+        recyclerView = view.findViewById(R.id.recycler_view_lines);
+        // Получим источник данных для списка
+        if(data == null) {data = new CardsSourceImpl(getResources()).init();}
+        initRecyclerView();
     }
 }

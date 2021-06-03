@@ -3,20 +3,25 @@ package com.example.myfragment.data;
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.example.myfragment.R;
 
-public class CardsSourceImpl implements CardsSource {
-    private final List<CardData> dataSource;
-    private final Resources resources;    // ресурсы приложения
+public class CardsSourceImpl implements CardsSource{
+    private  List<CardData> dataSource;
+    private  Resources resources;    // ресурсы приложения
 
     public CardsSourceImpl(Resources resources) {
-        dataSource = new ArrayList<>(5);
+        dataSource = new ArrayList<>();
         this.resources = resources;
     }
+
+
+
 
     public CardsSourceImpl init(){
         // строки заголовков из ресурсов
@@ -49,5 +54,29 @@ public class CardsSourceImpl implements CardsSource {
     public int size(){
         return dataSource.size();
     }
+
+    @Override
+    public void deleteCardData(int position) {
+        dataSource.remove(position);
+    }
+
+    @Override
+    public void updateCardData(int position, CardData cardData) {
+        dataSource.set(position, cardData);
+    }
+
+    @Override
+    public void addCardData(CardData cardData) {
+        dataSource.add(cardData);
+    }
+
+    @Override
+    public void clearCardData() {
+        dataSource.clear();
+    }
+
+
+
+
 }
 
