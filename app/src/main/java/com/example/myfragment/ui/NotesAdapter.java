@@ -1,6 +1,7 @@
 package com.example.myfragment.ui;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -12,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import androidx.annotation.NonNull;
@@ -30,13 +33,21 @@ public class NotesAdapter
     private OnItemClickListener itemClickListener;
     private final static String TAG = "NotesAdapter";
     private final CardsSource dataSource;
+    private final Fragment fragment;
+    private int menuPosition;
 
 
     // Передаём в конструктор источник данных
     // В нашем случае это массив, но может быть и запрос к БД
-    public NotesAdapter(CardsSource dataSource) {
+    public NotesAdapter(CardsSource dataSource, Fragment fragment) {
         this.dataSource = dataSource;
+        this.fragment = fragment;
     }
+
+    public int getMenuPosition() {
+        return menuPosition;
+    }
+
 
     // Создать новый элемент пользовательского интерфейса
     // Запускается менеджером
@@ -88,7 +99,7 @@ public class NotesAdapter
 
             image = itemView.findViewById(R.id.imageView);
 
-
+            registerContextMenu(itemView);
 
             itemView.setOnCreateContextMenuListener(this);
             // Обработчик нажатий на этом ViewHolder
@@ -100,6 +111,31 @@ public class NotesAdapter
                     }
                 }
             });
+
+            // Обработчик нажатий на картинке
+            image.setOnLongClickListener(new View.OnLongClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                @Override
+                public boolean onLongClick(View v) {
+                    menuPosition = getLayoutPosition();
+                    itemView.showContextMenu(10, 10);
+                    return true;
+                }
+            });
+
+        }
+
+        private void registerContextMenu(@NonNull View itemView) {
+            if (fragment != null){
+                itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        menuPosition = getLayoutPosition();
+                        return false;
+                    }
+                });
+                fragment.registerForContextMenu(itemView);
+            }
         }
 
 

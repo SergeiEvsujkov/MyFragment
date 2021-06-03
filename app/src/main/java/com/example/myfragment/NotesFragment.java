@@ -16,6 +16,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.PopupMenu;
@@ -73,7 +75,6 @@ public class NotesFragment extends Fragment {
     }
 
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -104,7 +105,7 @@ public class NotesFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         // Установим адаптер
-        adapter = new NotesAdapter(data);
+        adapter = new NotesAdapter(data, this);
         recyclerView.setAdapter(adapter);
 
         // Добавим разделитель карточек
@@ -117,7 +118,7 @@ public class NotesFragment extends Fragment {
         adapter.SetOnItemClickListener(new NotesAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int fi) {
-                registerForContextMenu(view);
+                //registerForContextMenu(view);
                 currentNote = new Note(fi, getResources().getStringArray(R.array.notes1)[fi], getResources().getStringArray(R.array.notesBody)[fi], getResources().getStringArray(R.array.notesDate)[fi]);
                 showBody(currentNote);
 
@@ -133,7 +134,6 @@ public class NotesFragment extends Fragment {
         outState.putParcelable(CURRENT_NOTE, currentNote);
         super.onSaveInstanceState(outState);
     }
-
 
 
     @Override
@@ -199,15 +199,20 @@ public class NotesFragment extends Fragment {
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
+        int position = adapter.getMenuPosition();
+
 
         switch (id) {
             case R.id.item1_popup:
-                Toast.makeText(getContext(), "Send", Toast.LENGTH_SHORT)
-                        .show();
+                data.updateCardData(position,
+                        new CardData("Кадр " + position,
+
+                                data.getCardData(position).getPicture()));
+                adapter.notifyItemChanged(position);
                 return true;
             case R.id.item2_popup:
-                Toast.makeText(getContext(), "Add photo", Toast.LENGTH_SHORT)
-                        .show();
+                data.deleteCardData(position);
+                adapter.notifyItemRemoved(position);
                 return true;
         }
         return super.onContextItemSelected(item);
@@ -241,7 +246,9 @@ public class NotesFragment extends Fragment {
     private void initView(View view) {
         recyclerView = view.findViewById(R.id.recycler_view_lines);
         // Получим источник данных для списка
-        if(data == null) {data = new CardsSourceImpl(getResources()).init();}
+        if (data == null) {
+            data = new CardsSourceImpl(getResources()).init();
+        }
         initRecyclerView();
     }
 }
