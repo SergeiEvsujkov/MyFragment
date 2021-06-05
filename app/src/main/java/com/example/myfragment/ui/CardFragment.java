@@ -99,15 +99,15 @@ public class CardFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.N)
     private CardData collectCardData() {
         String title = this.title.getText().toString();
+        String description = this.description.getText().toString();
         Date date = getDateFromDatePicker();
         int picture;
-        boolean like;
         if (cardData != null) {
             picture = cardData.getPicture();
         } else {
             picture = R.drawable.mars;
         }
-        return new CardData(title,  picture, date);
+        return new CardData(title,  picture, description, date);
     }
 
     // Получение даты из DatePicker
@@ -122,6 +122,7 @@ public class CardFragment extends Fragment {
 
     private void initView(View view) {
         title = view.findViewById(R.id.inputTitle);
+        description = view.findViewById(R.id.inputDescription);
         datePicker = view.findViewById(R.id.inputDate);
     }
 

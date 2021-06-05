@@ -3,6 +3,7 @@ package com.example.myfragment;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.icu.util.Calendar;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -47,7 +48,7 @@ import java.util.Objects;
 public class NotesFragment extends Fragment {
 
     public static final String CURRENT_NOTE = "CurrentNote";
-    private Note currentNote;
+    private CardData currentNote;
     private boolean isLandscape;
 
     private CardsSource data;
@@ -73,7 +74,9 @@ public class NotesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        data = new CardsSourceImpl(getResources()).init();
+        if (data == null ) {
+            data = new CardsSourceImpl(getResources()).init();
+        }
         setRetainInstance(true);
     }
 
@@ -135,7 +138,7 @@ public class NotesFragment extends Fragment {
     private void initRecyclerView() {
 
         // Эта установка служит для повышения производительности системы
-        recyclerView.setHasFixedSize(true);
+        //recyclerView.setHasFixedSize(true);
 
         // Будем работать со встроенным менеджером
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -165,10 +168,11 @@ public class NotesFragment extends Fragment {
 
         // Установим слушателя
         adapter.SetOnItemClickListener(new NotesAdapter.OnItemClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onItemClick(View view, int fi) {
                 //registerForContextMenu(view);
-                currentNote = new Note(fi, getResources().getStringArray(R.array.notes1)[fi], getResources().getStringArray(R.array.notesBody)[fi], getResources().getStringArray(R.array.notesDate)[fi]);
+                currentNote = data.getCardData(fi);
                 showBody(currentNote);
 
 
@@ -185,6 +189,7 @@ public class NotesFragment extends Fragment {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -197,7 +202,7 @@ public class NotesFragment extends Fragment {
         if (savedInstanceState != null) {
             currentNote = savedInstanceState.getParcelable(CURRENT_NOTE);
         } else {
-            currentNote = new Note(0, getResources().getStringArray(R.array.notes1)[0], getResources().getStringArray(R.array.notesBody)[0], getResources().getStringArray(R.array.notesDate)[0]);
+            currentNote = data.getCardData(0);
         }
 
 
@@ -206,7 +211,7 @@ public class NotesFragment extends Fragment {
         }
     }
 
-    private void showBody(Note currentNote) {
+    private void showBody(CardData currentNote) {
         if (isLandscape) {
             showLandBody(currentNote);
         } else {
@@ -215,7 +220,7 @@ public class NotesFragment extends Fragment {
     }
 
 
-    private void showLandBody(Note currentNote) {
+    private void showLandBody(CardData currentNote) {
         NotesBodyFragment detail = NotesBodyFragment.newInstance(currentNote);
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -224,10 +229,10 @@ public class NotesFragment extends Fragment {
         fragmentTransaction.commit();
     }
 
-    private void showPortBody(Note currentNote) {
+    private void showPortBody(CardData currentNote) {
         Intent intent = new Intent();
         intent.setClass(getActivity(), NotesBodyActivity.class);
-        intent.putExtra(NotesBodyFragment.ARG_NOTE, currentNote);
+        intent.putExtra(NotesBodyFragment.ARG_CARD_DATA, currentNote);
         startActivity(intent);
     }
 
@@ -306,11 +311,12 @@ public class NotesFragment extends Fragment {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void initView(View view) {
-        recyclerView = view.findViewById(R.id.recycler_view_lines);
+
         // Получим источник данных для списка
         if (data == null) {
             data = new CardsSourceImpl(getResources()).init();
         }
+        //recyclerView = view.findViewById(R.id.recycler_view_lines);
         initRecyclerView();
     }
 }

@@ -27,6 +27,7 @@ import com.example.myfragment.NotesFragment;
 import com.example.myfragment.R;
 import com.example.myfragment.data.CardData;
 import com.example.myfragment.data.CardsSource;
+import com.example.myfragment.data.CardsSourceImpl;
 
 public class NotesAdapter
         extends RecyclerView.Adapter<NotesAdapter.ViewHolder> {

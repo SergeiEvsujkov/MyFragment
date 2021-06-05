@@ -1,21 +1,21 @@
 package com.example.myfragment;
 
-import androidx.annotation.NonNull;
+
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
+
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.view.Menu;
+
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.myfragment.observer.Publisher;
-import com.example.myfragment.ui.CardFragment;
+
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity {

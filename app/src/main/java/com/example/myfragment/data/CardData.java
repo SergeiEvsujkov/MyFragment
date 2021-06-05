@@ -6,21 +6,27 @@ import android.os.Parcelable;
 import java.util.Date;
 
 public class CardData implements Parcelable {
+
     private final String notes;       // заголовок
     private final int picture;        // изображение
+    private final String description;
     private Date date; // дата
 
-    public CardData(String notes, int picture, Date date) {
+    public CardData(String notes, int picture, String description, Date date) {
+
         this.notes = notes;
         this.picture = picture;
+        this.description = description;
         this.date = date;
 
     }
 
 
     protected CardData(Parcel in) {
+
         notes = in.readString();
         picture = in.readInt();
+        description = in.readString();
         date = new Date(in.readLong());
     }
 
@@ -44,6 +50,10 @@ public class CardData implements Parcelable {
         return picture;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
 
     public Date getDate() {
         return date;
@@ -56,8 +66,10 @@ public class CardData implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+
         dest.writeString(notes);
         dest.writeInt(picture);
+        dest.writeString(description);
         dest.writeLong(date.getTime());
     }
 }

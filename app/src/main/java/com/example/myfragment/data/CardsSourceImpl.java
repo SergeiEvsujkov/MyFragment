@@ -16,11 +16,11 @@ import java.util.List;
 import com.example.myfragment.R;
 
 public class CardsSourceImpl implements CardsSource{
-    private  List<CardData> dataSource;
+    private List<CardData> dataSource;
     private  Resources resources;    // ресурсы приложения
 
     public CardsSourceImpl(Resources resources) {
-        dataSource = new ArrayList<>();
+        dataSource = new  ArrayList<>();
         this.resources = resources;
     }
 
@@ -31,11 +31,12 @@ public class CardsSourceImpl implements CardsSource{
     public CardsSourceImpl init(){
         // строки заголовков из ресурсов
         String[] notes = resources.getStringArray(R.array.notes1);
+        String[] description = resources.getStringArray(R.array.notesBody);
         // изображения
         int[] pictures = getImageArray();
         // заполнение источника данных
         for (int i = 0; i < notes.length; i++) {
-            dataSource.add(new CardData(notes[i], pictures[i], Calendar.getInstance().getTime()));
+            dataSource.add(new CardData(notes[i], pictures[i], description[i], Calendar.getInstance().getTime()));
         }
         return this;
     }
