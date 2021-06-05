@@ -5,8 +5,6 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.icu.util.Calendar;
 import android.os.Build;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import androidx.annotation.RequiresApi;
 
@@ -15,20 +13,18 @@ import java.util.List;
 
 import com.example.myfragment.R;
 
-public class CardsSourceImpl implements CardsSource{
+public class CardsSourceImpl implements CardsSource {
     private List<CardData> dataSource;
-    private  Resources resources;    // ресурсы приложения
+    private Resources resources;    // ресурсы приложения
 
     public CardsSourceImpl(Resources resources) {
-        dataSource = new  ArrayList<>();
+        dataSource = new ArrayList<>();
         this.resources = resources;
     }
 
 
-
-
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public CardsSourceImpl init(){
+    public CardsSourceImpl init() {
         // строки заголовков из ресурсов
         String[] notes = resources.getStringArray(R.array.notes1);
         String[] description = resources.getStringArray(R.array.notesBody);
@@ -43,11 +39,11 @@ public class CardsSourceImpl implements CardsSource{
 
     // Механизм вытаскивания идентификаторов картинок
     // https://stackoverflow.com/questions/5347107/creating-integer-array-of-resource-ids
-    private int[] getImageArray(){
+    private int[] getImageArray() {
         @SuppressLint("Recycle") TypedArray pictures = resources.obtainTypedArray(R.array.pictures);
         int length = pictures.length();
         int[] answer = new int[length];
-        for(int i = 0; i < length; i++){
+        for (int i = 0; i < length; i++) {
             answer[i] = pictures.getResourceId(i, 0);
         }
         return answer;
@@ -57,7 +53,7 @@ public class CardsSourceImpl implements CardsSource{
         return dataSource.get(position);
     }
 
-    public int size(){
+    public int size() {
         return dataSource.size();
     }
 
@@ -80,8 +76,6 @@ public class CardsSourceImpl implements CardsSource{
     public void clearCardData() {
         dataSource.clear();
     }
-
-
 
 
 }

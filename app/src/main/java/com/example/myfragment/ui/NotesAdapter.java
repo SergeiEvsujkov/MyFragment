@@ -1,33 +1,32 @@
 package com.example.myfragment.ui;
 
-import android.annotation.SuppressLint;
+
 import android.icu.text.SimpleDateFormat;
 import android.os.Build;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
-import android.view.MenuItem;
+
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ImageView;
+
 import android.widget.TextView;
-import android.widget.Toast;
+
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myfragment.NotesFragment;
+
 import com.example.myfragment.R;
 import com.example.myfragment.data.CardData;
 import com.example.myfragment.data.CardsSource;
-import com.example.myfragment.data.CardsSourceImpl;
+
 
 public class NotesAdapter
         extends RecyclerView.Adapter<NotesAdapter.ViewHolder> {
@@ -89,7 +88,6 @@ public class NotesAdapter
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
 
 
-
         private final TextView notes;
 
         private final AppCompatImageView image;
@@ -106,12 +104,11 @@ public class NotesAdapter
             date = itemView.findViewById(R.id.date);
 
 
-
             registerContextMenu(itemView);
 
             itemView.setOnCreateContextMenuListener(this);
             // Обработчик нажатий на этом ViewHolder
-           image.setOnClickListener(new View.OnClickListener() {
+            image.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (itemClickListener != null) {
@@ -134,7 +131,7 @@ public class NotesAdapter
         }
 
         private void registerContextMenu(@NonNull View itemView) {
-            if (fragment != null){
+            if (fragment != null) {
                 itemView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
@@ -148,7 +145,7 @@ public class NotesAdapter
 
 
         @RequiresApi(api = Build.VERSION_CODES.N)
-        public void setData(CardData cardData){
+        public void setData(CardData cardData) {
             notes.setText(cardData.getNotes());
             image.setImageResource(cardData.getPicture());
             date.setText(new SimpleDateFormat("dd-MM-yy").format(cardData.getDate()));

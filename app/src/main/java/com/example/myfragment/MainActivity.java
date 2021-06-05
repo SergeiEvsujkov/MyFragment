@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private Navigation navigation;
     private Publisher publisher = new Publisher();
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         navigation = new Navigation(getSupportFragmentManager());
         initView();
         getNavigation().addFragment(NotesFragment.newInstance(), false);
+
     }
 
     private void initView() {
@@ -67,51 +69,52 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-        @SuppressLint("NonConstantResourceId")
-        @Override
-        public boolean onOptionsItemSelected (MenuItem item){
-            // Обработка выбора пункта меню приложения (активити)
-            int id = item.getItemId();
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Обработка выбора пункта меню приложения (активити)
+        int id = item.getItemId();
 
 
-            if (navigateFragment(id)) {
+        if (navigateFragment(id)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    @SuppressLint("NonConstantResourceId")
+    private boolean navigateFragment(int id) {
+        switch (id) {
+            case R.id.action_favorite:
+                Toast.makeText(MainActivity.this, "Favorite", Toast.LENGTH_SHORT)
+                        .show();
                 return true;
-            }
-            return super.onOptionsItemSelected(item);
+            case R.id.action_main:
+                Toast.makeText(MainActivity.this, "Main", Toast.LENGTH_SHORT)
+                        .show();
+                return true;
+            case R.id.action_settings:
+                Toast.makeText(MainActivity.this, "Settings", Toast.LENGTH_SHORT)
+                        .show();
+                return true;
         }
-
-
-        @SuppressLint("NonConstantResourceId")
-        private boolean navigateFragment ( int id){
-            switch (id) {
-                case R.id.action_favorite:
-                    Toast.makeText(MainActivity.this, "Favorite", Toast.LENGTH_SHORT)
-                            .show();
-                    return true;
-                case R.id.action_main:
-                    Toast.makeText(MainActivity.this, "Main", Toast.LENGTH_SHORT)
-                            .show();
-                    return true;
-                case R.id.action_settings:
-                    Toast.makeText(MainActivity.this, "Settings", Toast.LENGTH_SHORT)
-                            .show();
-                    return true;
-            }
-            return false;
-        }
+        return false;
+    }
 
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
     }
+
     public Navigation getNavigation() {
         return navigation;
     }
+
     public Publisher getPublisher() {
         return publisher;
     }
-
 
 
 }

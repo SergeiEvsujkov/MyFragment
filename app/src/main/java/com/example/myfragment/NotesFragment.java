@@ -3,7 +3,6 @@ package com.example.myfragment;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.icu.util.Calendar;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -68,15 +67,12 @@ public class NotesFragment extends Fragment {
     }
 
 
-
-
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (data == null ) {
-            data = new CardsSourceImpl(getResources()).init();
-        }
+        data = new CardsSourceImpl(getResources()).init();
+
         setRetainInstance(true);
     }
 
@@ -159,11 +155,10 @@ public class NotesFragment extends Fragment {
         animator.setRemoveDuration(MY_DEFAULT_DURATION);
         recyclerView.setItemAnimator(animator);
 
-        if (moveToLastPosition){
+        if (moveToLastPosition) {
             recyclerView.smoothScrollToPosition(data.size() - 1);
             moveToLastPosition = false;
         }
-
 
 
         // Установим слушателя
@@ -278,7 +273,7 @@ public class NotesFragment extends Fragment {
         return super.onContextItemSelected(item);
     }
 
-   @Override
+    @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.main, menu);
     }
@@ -313,10 +308,7 @@ public class NotesFragment extends Fragment {
     private void initView(View view) {
 
         // Получим источник данных для списка
-        if (data == null) {
-            data = new CardsSourceImpl(getResources()).init();
-        }
-        //recyclerView = view.findViewById(R.id.recycler_view_lines);
+        data = new CardsSourceImpl(getResources()).init();
         initRecyclerView();
     }
 }

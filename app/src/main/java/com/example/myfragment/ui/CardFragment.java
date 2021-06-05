@@ -107,7 +107,7 @@ public class CardFragment extends Fragment {
         } else {
             picture = R.drawable.mars;
         }
-        return new CardData(title,  picture, description, date);
+        return new CardData(title, picture, description, date);
     }
 
     // Получение даты из DatePicker
