@@ -14,20 +14,29 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.myfragment.observer.Publisher;
+import com.example.myfragment.ui.CardFragment;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity {
+
+    private Navigation navigation;
+    private Publisher publisher = new Publisher();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        navigation = new Navigation(getSupportFragmentManager());
         initView();
+        getNavigation().addFragment(NotesFragment.newInstance(), false);
     }
 
     private void initView() {
         Toolbar toolbar = initToolbar();
         initDrawer(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
     }
 
     // регистрация drawer
@@ -90,6 +99,19 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+    public Navigation getNavigation() {
+        return navigation;
+    }
+    public Publisher getPublisher() {
+        return publisher;
+    }
+
 
 
 }

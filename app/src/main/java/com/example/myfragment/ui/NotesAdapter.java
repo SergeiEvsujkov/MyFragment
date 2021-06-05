@@ -1,6 +1,7 @@
 package com.example.myfragment.ui;
 
 import android.annotation.SuppressLint;
+import android.icu.text.SimpleDateFormat;
 import android.os.Build;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -65,6 +66,7 @@ public class NotesAdapter
 
     // Заменить данные в пользовательском интерфейсе
     // Вызывается менеджером
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onBindViewHolder(@NonNull NotesAdapter.ViewHolder viewHolder, int i) {
         // Получить элемент из источника данных (БД, интернет...)
@@ -90,6 +92,7 @@ public class NotesAdapter
         private final TextView notes;
 
         private final AppCompatImageView image;
+        private TextView date;
 
 
         public ViewHolder(@NonNull View itemView) {
@@ -98,6 +101,10 @@ public class NotesAdapter
             notes = itemView.findViewById(R.id.textView);
 
             image = itemView.findViewById(R.id.imageView);
+
+            date = itemView.findViewById(R.id.date);
+
+
 
             registerContextMenu(itemView);
 
@@ -139,9 +146,12 @@ public class NotesAdapter
         }
 
 
+        @RequiresApi(api = Build.VERSION_CODES.N)
         public void setData(CardData cardData){
             notes.setText(cardData.getNotes());
             image.setImageResource(cardData.getPicture());
+            date.setText(new SimpleDateFormat("dd-MM-yy").format(cardData.getDate()));
+
         }
 
 

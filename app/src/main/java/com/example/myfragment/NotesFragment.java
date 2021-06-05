@@ -1,9 +1,9 @@
 package com.example.myfragment;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -12,16 +12,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
+import android.widget.Toast;
+import android.content.Context;
+
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.fragment.app.Fragment;
+
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -30,6 +30,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myfragment.data.CardData;
+import com.example.myfragment.observer.Observer;
+import com.example.myfragment.observer.Publisher;
+import com.example.myfragment.ui.CardFragment;
 import com.example.myfragment.ui.NotesAdapter;
 import com.squareup.otto.Subscribe;
 
@@ -38,8 +41,8 @@ import com.example.myfragment.event_bus.events.ButtonClickedEvent;
 import com.example.myfragment.data.CardsSource;
 import com.example.myfragment.data.CardsSourceImpl;
 
-import java.util.List;
 import java.util.Objects;
+
 
 public class NotesFragment extends Fragment {
 
@@ -52,28 +55,60 @@ public class NotesFragment extends Fragment {
     private RecyclerView recyclerView;
     private static final int MY_DEFAULT_DURATION = 1000;
 
+    private Navigation navigation;
+    private Publisher publisher;
+    // признак, что при повторном открытии фрагмента
+// (возврате из фрагмента, добавляющего запись)
+// надо прыгнуть на последнюю запись
+    private boolean moveToLastPosition;
+
+    public static NotesFragment newInstance() {
+        return new NotesFragment();
+    }
+
+
+
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        data = new CardsSourceImpl(getResources()).init();
         setRetainInstance(true);
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
 
         View view = inflater.inflate(R.layout.fragment_notes, container, false);
-        RecyclerView recyclerView = view.findViewById(R.id.recycler_view_lines);
+        recyclerView = view.findViewById(R.id.recycler_view_lines);
 
         // Получим источник данных для списка
 
-        //data = new CardsSourceImpl(getResources()).init();
 
         initView(view);
         setHasOptionsMenu(true);
         return view;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        MainActivity activity = (MainActivity) context;
+        navigation = activity.getNavigation();
+        publisher = activity.getPublisher();
+
+    }
+
+    @Override
+    public void onDetach() {
+        navigation = null;
+        publisher = null;
+        super.onDetach();
     }
 
 
@@ -111,7 +146,7 @@ public class NotesFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         // Добавим разделитель карточек
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL);
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL);
         itemDecoration.setDrawable(getResources().getDrawable(R.drawable.separator, null));
         recyclerView.addItemDecoration(itemDecoration);
 
@@ -120,6 +155,12 @@ public class NotesFragment extends Fragment {
         animator.setAddDuration(MY_DEFAULT_DURATION);
         animator.setRemoveDuration(MY_DEFAULT_DURATION);
         recyclerView.setItemAnimator(animator);
+
+        if (moveToLastPosition){
+            recyclerView.smoothScrollToPosition(data.size() - 1);
+            moveToLastPosition = false;
+        }
+
 
 
         // Установим слушателя
@@ -212,12 +253,17 @@ public class NotesFragment extends Fragment {
 
         switch (id) {
             case R.id.item1_popup:
-                data.updateCardData(position,
-                        new CardData("Кадр " + position,
+                navigation.addFragment(CardFragment.newInstance(data.getCardData(position)),
+                        true);
+                publisher.subscribe(new Observer() {
+                    @Override
+                    public void updateCardData(CardData cardData) {
+                        data.updateCardData(position, cardData);
+                        adapter.notifyItemChanged(position);
+                    }
+                });
 
-                                data.getCardData(position).getPicture()));
-                adapter.notifyItemChanged(position);
-                recyclerView.smoothScrollToPosition(data.size() - 1);
+
                 return true;
             case R.id.item2_popup:
                 data.deleteCardData(position);
@@ -227,8 +273,8 @@ public class NotesFragment extends Fragment {
         return super.onContextItemSelected(item);
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+   @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.main, menu);
     }
 
@@ -237,11 +283,17 @@ public class NotesFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add:
-                data.addCardData(new CardData("Заголовок " + data.size(),
-
-                        R.drawable.merc));
-                adapter.notifyItemInserted(data.size() - 1);
-                recyclerView.scrollToPosition(data.size() - 1);
+                navigation.addFragment(CardFragment.newInstance(), true);
+                publisher.subscribe(new Observer() {
+                    @Override
+                    public void updateCardData(CardData cardData) {
+                        data.addCardData(cardData);
+                        adapter.notifyItemInserted(data.size() - 1);
+// это сигнал, чтобы вызванный метод onCreateView
+// перепрыгнул на конец списка
+                        moveToLastPosition = true;
+                    }
+                });
                 return true;
             case R.id.action_clear:
                 data.clearCardData();
@@ -252,6 +304,7 @@ public class NotesFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void initView(View view) {
         recyclerView = view.findViewById(R.id.recycler_view_lines);
         // Получим источник данных для списка

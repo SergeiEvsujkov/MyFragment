@@ -142,4 +142,3 @@ public class CardFragment extends Fragment {
                 null);
     }
 }
-}
