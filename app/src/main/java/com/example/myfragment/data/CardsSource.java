@@ -1,6 +1,9 @@
 package com.example.myfragment.data;
 
 public interface CardsSource {
+
+    CardsSource init(CardsSourceResponse cardsSourceResponse);
+
     CardData getCardData(int position);
 
     int size();

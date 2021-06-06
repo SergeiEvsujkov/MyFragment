@@ -30,6 +30,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myfragment.data.CardData;
+import com.example.myfragment.data.CardsSourceFirebaseImpl;
+import com.example.myfragment.data.CardsSourceResponse;
 import com.example.myfragment.observer.Observer;
 import com.example.myfragment.observer.Publisher;
 import com.example.myfragment.ui.CardFragment;
@@ -39,7 +41,6 @@ import com.squareup.otto.Subscribe;
 import com.example.myfragment.event_bus.EventBus;
 import com.example.myfragment.event_bus.events.ButtonClickedEvent;
 import com.example.myfragment.data.CardsSource;
-import com.example.myfragment.data.CardsSourceImpl;
 
 import java.util.Objects;
 
@@ -60,20 +61,11 @@ public class NotesFragment extends Fragment {
     // признак, что при повторном открытии фрагмента
 // (возврате из фрагмента, добавляющего запись)
 // надо прыгнуть на последнюю запись
-    private boolean moveToLastPosition;
+    private boolean moveToFirstPosition;
+
 
     public static NotesFragment newInstance() {
         return new NotesFragment();
-    }
-
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        data = new CardsSourceImpl(getResources()).init();
-
-        setRetainInstance(true);
     }
 
 
@@ -91,6 +83,13 @@ public class NotesFragment extends Fragment {
 
         initView(view);
         setHasOptionsMenu(true);
+        data = new CardsSourceFirebaseImpl().init(new CardsSourceResponse() {
+            @Override
+            public void initialized(CardsSource cardsData) {
+                adapter.notifyDataSetChanged();
+            }
+        });
+        adapter.setDataSource(data);
         return view;
     }
 
@@ -141,11 +140,11 @@ public class NotesFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         // Установим адаптер
-        adapter = new NotesAdapter(data, this);
+        adapter = new NotesAdapter(this);
         recyclerView.setAdapter(adapter);
 
         // Добавим разделитель карточек
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL);
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL);
         itemDecoration.setDrawable(getResources().getDrawable(R.drawable.separator, null));
         recyclerView.addItemDecoration(itemDecoration);
 
@@ -155,9 +154,9 @@ public class NotesFragment extends Fragment {
         animator.setRemoveDuration(MY_DEFAULT_DURATION);
         recyclerView.setItemAnimator(animator);
 
-        if (moveToLastPosition) {
-            recyclerView.smoothScrollToPosition(data.size() - 1);
-            moveToLastPosition = false;
+        if (moveToFirstPosition && data.size() > 0) {
+            recyclerView.scrollToPosition(0);
+            moveToFirstPosition = false;
         }
 
 
@@ -184,7 +183,7 @@ public class NotesFragment extends Fragment {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -196,8 +195,6 @@ public class NotesFragment extends Fragment {
 
         if (savedInstanceState != null) {
             currentNote = savedInstanceState.getParcelable(CURRENT_NOTE);
-        } else {
-            currentNote = data.getCardData(0);
         }
 
 
@@ -247,30 +244,8 @@ public class NotesFragment extends Fragment {
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        int position = adapter.getMenuPosition();
 
-
-        switch (id) {
-            case R.id.item1_popup:
-                navigation.addFragment(CardFragment.newInstance(data.getCardData(position)),
-                        true);
-                publisher.subscribe(new Observer() {
-                    @Override
-                    public void updateCardData(CardData cardData) {
-                        data.updateCardData(position, cardData);
-                        adapter.notifyItemChanged(position);
-                    }
-                });
-
-
-                return true;
-            case R.id.item2_popup:
-                data.deleteCardData(position);
-                adapter.notifyItemRemoved(position);
-                return true;
-        }
-        return super.onContextItemSelected(item);
+        return onItemSelected(item.getItemId()) || super.onContextItemSelected(item);
     }
 
     @Override
@@ -281,7 +256,26 @@ public class NotesFragment extends Fragment {
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
+        return onItemSelected(item.getItemId()) ||
+                super.onOptionsItemSelected(item);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void initView(View view) {
+
+        // Получим источник данных для списка
+        data = new CardsSourceFirebaseImpl().init(new CardsSourceResponse() {
+            @Override
+            public void initialized(CardsSource cardsData) {
+                adapter.notifyDataSetChanged();
+            }
+        });
+        initRecyclerView();
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    private boolean onItemSelected(int menuItemId) {
+        switch (menuItemId) {
             case R.id.action_add:
                 navigation.addFragment(CardFragment.newInstance(), true);
                 publisher.subscribe(new Observer() {
@@ -289,26 +283,32 @@ public class NotesFragment extends Fragment {
                     public void updateCardData(CardData cardData) {
                         data.addCardData(cardData);
                         adapter.notifyItemInserted(data.size() - 1);
-// это сигнал, чтобы вызванный метод onCreateView
-// перепрыгнул на конец списка
-                        moveToLastPosition = true;
+                        moveToFirstPosition = true;
                     }
                 });
+                return true;
+            case R.id.item1_popup:
+                final int updatePosition = adapter.getMenuPosition();
+                navigation.addFragment(CardFragment.newInstance(data.getCardData(updatePosition)), true);
+                publisher.subscribe(new Observer() {
+                    @Override
+                    public void updateCardData(CardData cardData) {
+                        data.updateCardData(updatePosition, cardData);
+                        adapter.notifyItemChanged(updatePosition);
+                    }
+                });
+                return true;
+            case R.id.item2_popup:
+                int deletePosition = adapter.getMenuPosition();
+                data.deleteCardData(deletePosition);
+                adapter.notifyItemRemoved(deletePosition);
                 return true;
             case R.id.action_clear:
                 data.clearCardData();
                 adapter.notifyDataSetChanged();
-
                 return true;
         }
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private void initView(View view) {
-
-        // Получим источник данных для списка
-        data = new CardsSourceImpl(getResources()).init();
-        initRecyclerView();
-    }
 }

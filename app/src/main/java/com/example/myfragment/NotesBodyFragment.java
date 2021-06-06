@@ -42,9 +42,13 @@ public class NotesBodyFragment extends Fragment {
         TextView noteNameView = view.findViewById(R.id.textView);
         TextView noteBodyView = view.findViewById(R.id.textBody);
         TextView noteDateView = view.findViewById(R.id.textDate);
-        noteNameView.setText(cardData.getNotes());
-        noteBodyView.setText(cardData.getDescription());
-        noteDateView.setText(cardData.getDate().toString());
+        try {
+            noteNameView.setText(cardData.getNotes());
+            noteBodyView.setText(cardData.getDescription());
+            noteDateView.setText(cardData.getDate().toString());
+        } catch (Exception e) {
+            noteNameView.setText("Выберите заметку");
+        }
 
         noteNameView.setOnClickListener(v -> EventBus.getBus().post(new ButtonClickedEvent(5)));
         return view;

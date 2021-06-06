@@ -7,6 +7,7 @@ import java.util.Date;
 
 public class CardData implements Parcelable {
 
+    private String id; // идентификатор
     private final String notes;       // заголовок
     private final int picture;        // изображение
     private final String description;
@@ -57,6 +58,14 @@ public class CardData implements Parcelable {
 
     public Date getDate() {
         return date;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override

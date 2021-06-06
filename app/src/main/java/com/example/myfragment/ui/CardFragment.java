@@ -17,6 +17,7 @@ import android.widget.DatePicker;
 import com.example.myfragment.MainActivity;
 import com.example.myfragment.R;
 import com.example.myfragment.data.CardData;
+import com.example.myfragment.data.PictureIndexConverter;
 import com.example.myfragment.observer.Publisher;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -101,13 +102,16 @@ public class CardFragment extends Fragment {
         String title = this.title.getText().toString();
         String description = this.description.getText().toString();
         Date date = getDateFromDatePicker();
-        int picture;
+
         if (cardData != null) {
-            picture = cardData.getPicture();
+            CardData answer;
+            answer = new CardData(title, cardData.getPicture(), description, date);
+            answer.setId(cardData.getId());
+            return answer;
         } else {
-            picture = R.drawable.mars;
+            int picture = PictureIndexConverter.getPictureByIndex(PictureIndexConverter.randomPictureIndex());
+            return new CardData(title, picture, description, date);
         }
-        return new CardData(title, picture, description, date);
     }
 
     // Получение даты из DatePicker
