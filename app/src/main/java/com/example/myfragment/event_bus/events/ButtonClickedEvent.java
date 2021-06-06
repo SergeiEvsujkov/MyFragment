@@ -1,4 +1,4 @@
-package ru.geekbrains.cityheraldry.event_bus.events;
+package com.example.myfragment.event_bus.events;
 
 public class ButtonClickedEvent {
     public int count = 0;

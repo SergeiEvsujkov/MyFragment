@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
-// Эта activity для показа герба в портретной ориентации
+
 public class NotesBodyActivity extends AppCompatActivity {
 
     @Override
@@ -27,7 +27,7 @@ public class NotesBodyActivity extends AppCompatActivity {
             // Добавим фрагмент на activity
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_container, details).commit();
+                    .replace(R.id.fragment_container1, details).commit();
         }
     }
 }

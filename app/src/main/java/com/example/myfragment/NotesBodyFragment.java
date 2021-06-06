@@ -1,32 +1,28 @@
 package com.example.myfragment;
 
-import android.content.res.TypedArray;
+
 import android.os.Bundle;
-
-import androidx.appcompat.widget.AppCompatImageView;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import ru.geekbrains.cityheraldry.event_bus.EventBus;
-import ru.geekbrains.cityheraldry.event_bus.events.ButtonClickedEvent;
+import androidx.fragment.app.Fragment;
+
+import com.example.myfragment.data.CardData;
+import com.example.myfragment.event_bus.EventBus;
+
+import com.example.myfragment.event_bus.events.ButtonClickedEvent;
 
 public class NotesBodyFragment extends Fragment {
 
-    public static final String ARG_NOTE = "note";
-    private Note note;
+    public static final String ARG_CARD_DATA = "card_data";
+    private CardData cardData;
 
-    // Фабричный метод создания фрагмента
-    // Фрагменты рекомендуется создавать через фабричные методы.
-    public static NotesBodyFragment newInstance(Note note) {
+    public static NotesBodyFragment newInstance(CardData cardData) {
         NotesBodyFragment f = new NotesBodyFragment();    // создание
-
-        // Передача параметра
         Bundle args = new Bundle();
-        args.putParcelable(ARG_NOTE, note);
+        args.putParcelable(ARG_CARD_DATA, cardData);
         f.setArguments(args);
         return f;
     }
@@ -35,30 +31,26 @@ public class NotesBodyFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            note = getArguments().getParcelable(ARG_NOTE);
+            cardData = getArguments().getParcelable(ARG_CARD_DATA);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Таким способом можно получить головной элемент из макета
         View view = inflater.inflate(R.layout.fragment_notes_body, container, false);
-        // найти в контейнере элемент-изображение
-        AppCompatImageView imageBody = view.findViewById(R.id.body);
-        // Получить из ресурсов массив указателей на изображения гербов
-        TypedArray images = getResources().obtainTypedArray(R.array.body_imgs);
-        // Выбрать по индексу подходящий
-        imageBody.setImageResource(images.getResourceId(note.getImageIndex(), -1));
-        // Установить название города
         TextView noteNameView = view.findViewById(R.id.textView);
-        noteNameView.setText(note.getNoteName());
-        noteNameView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EventBus.getBus().post(new ButtonClickedEvent(5));
-            }
-        });
+        TextView noteBodyView = view.findViewById(R.id.textBody);
+        TextView noteDateView = view.findViewById(R.id.textDate);
+        try {
+            noteNameView.setText(cardData.getNotes());
+            noteBodyView.setText(cardData.getDescription());
+            noteDateView.setText(cardData.getDate().toString());
+        } catch (Exception e) {
+            noteNameView.setText("Выберите заметку");
+        }
+
+        noteNameView.setOnClickListener(v -> EventBus.getBus().post(new ButtonClickedEvent(5)));
         return view;
     }
 }

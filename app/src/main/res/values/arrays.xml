@@ -1,18 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="notes">
-        <item>Москва</item>
-        <item>Санкт-Петербург</item>
-        <item>Екатеринбург</item>
-        <item>Новосибирск</item>
-        <item>Самара</item>
+    <string-array name="notes1">
+        <item>Земля</item>
+        <item>Меркурий</item>
+        <item>Марс</item>
+        <item>Юпитер</item>
+        <item>Сатурн</item>
     </string-array>
 
-    <integer-array name="body_imgs">
-        <item>@drawable/msc</item><!-- герб Москвы -->
-        <item>@drawable/spb</item><!-- герб Санкт-Петербурга -->
-        <item>@drawable/ebrg</item><!-- герб Екатеринбурга -->
-        <item>@drawable/nsk</item><!-- герб Новосибирска -->
-        <item>@drawable/sam</item><!-- герб Самары -->
-    </integer-array>
+    <string-array name="notesBody">
+        <item>Планета, на которой есть жизнь</item>
+        <item>Первая планета от Солнца</item>
+        <item>Называют красной планетой</item>
+        <item>Огромная планета</item>
+        <item>Имеет множество колец</item>
+    </string-array>
+
+    <string-array name="notesDate">
+        <item>03.11.2020</item>
+        <item>04.10.2020</item>
+        <item>05.12.2020</item>
+        <item>06.09.2020</item>
+        <item>07.11.2020</item>
+    </string-array>
+
+    <array name="pictures">
+        <item>@drawable/earth</item>
+        <item>@drawable/merc</item>
+        <item>@drawable/mars</item>
+        <item>@drawable/jup</item>
+        <item>@drawable/sat</item>
+    </array>
 </resources>
