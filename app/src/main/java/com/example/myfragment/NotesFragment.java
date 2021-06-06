@@ -1,6 +1,7 @@
 package com.example.myfragment;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 import android.content.Context;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import androidx.annotation.NonNull;
@@ -55,6 +57,7 @@ public class NotesFragment extends Fragment {
     private NotesAdapter adapter;
     private RecyclerView recyclerView;
     private static final int MY_DEFAULT_DURATION = 1000;
+
 
     private Navigation navigation;
     private Publisher publisher;
@@ -183,7 +186,6 @@ public class NotesFragment extends Fragment {
     }
 
 
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -299,10 +301,36 @@ public class NotesFragment extends Fragment {
                 });
                 return true;
             case R.id.item2_popup:
-                int deletePosition = adapter.getMenuPosition();
-                data.deleteCardData(deletePosition);
-                adapter.notifyItemRemoved(deletePosition);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+                builder.setTitle(R.string.delete_question)
+
+                        .setCancelable(false)
+
+                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Toast.makeText(getContext(), "Нет!",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                deleteCard();
+                            }
+
+                            private void deleteCard() {
+                                int deletePosition = adapter.getMenuPosition();
+                                data.deleteCardData(deletePosition);
+                                adapter.notifyItemRemoved(deletePosition);
+                            }
+                        });
+
+                AlertDialog alert = builder.create();
+                alert.show();
+
                 return true;
+
             case R.id.action_clear:
                 data.clearCardData();
                 adapter.notifyDataSetChanged();

@@ -133,6 +133,7 @@ public class CardFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void populateView() {
         title.setText(cardData.getNotes());
+        description.setText(cardData.getDescription());
         initDatePicker(cardData.getDate());
     }
 

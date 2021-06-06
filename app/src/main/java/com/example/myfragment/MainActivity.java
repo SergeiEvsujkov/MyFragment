@@ -1,6 +1,7 @@
 package com.example.myfragment;
 
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -23,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Navigation navigation;
     private Publisher publisher = new Publisher();
-    private static final String KEY_ROTATE = "ROTATE";
+    private static final String KEY_SIGN = "SIGN";
     public static boolean isSingIn;
 
 
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         navigation = new Navigation(getSupportFragmentManager());
         initView();
         if (savedInstanceState != null) {
-            isSingIn = savedInstanceState.getBoolean(KEY_ROTATE, isSingIn);
+            isSingIn = savedInstanceState.getBoolean(KEY_SIGN, isSingIn);
         }
         if (isSingIn){
             getNavigation().addFragment(StartFragment.newInstance(), false);
@@ -46,9 +47,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(KEY_ROTATE, isSingIn);
+        outState.putBoolean(KEY_SIGN, isSingIn);
     }
 
     private void initView() {

@@ -19,4 +19,7 @@
     <string name="description">Описание</string>
     <string name="continue_">Продолжить</string>
     <string name="sign_out">Sign_out</string>
+    <string name="delete_question">Точно удалить?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
 </resources>
