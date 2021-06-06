@@ -16,12 +16,15 @@ import android.widget.Toast;
 
 import com.example.myfragment.observer.Publisher;
 
+import com.example.myfragment.ui.StartFragment;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
     private Navigation navigation;
     private Publisher publisher = new Publisher();
+    private static final String KEY_ROTATE = "ROTATE";
+    public static boolean isSingIn;
 
 
     @Override
@@ -30,8 +33,22 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         navigation = new Navigation(getSupportFragmentManager());
         initView();
-        getNavigation().addFragment(NotesFragment.newInstance(), false);
+        if (savedInstanceState != null) {
+            isSingIn = savedInstanceState.getBoolean(KEY_ROTATE, isSingIn);
+        }
+        if (isSingIn){
+            getNavigation().addFragment(StartFragment.newInstance(), false);
+            getNavigation().addFragment(NotesFragment.newInstance(), true);
+        } else {
+        getNavigation().addFragment(StartFragment.newInstance(), false);
+        }
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(KEY_ROTATE, isSingIn);
     }
 
     private void initView() {

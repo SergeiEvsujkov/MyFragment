@@ -17,4 +17,6 @@
     <string name="delete">Удалить</string>
     <string name="name">Заголовок</string>
     <string name="description">Описание</string>
+    <string name="continue_">Продолжить</string>
+    <string name="sign_out">Sign_out</string>
 </resources>
